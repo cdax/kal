@@ -8,6 +8,8 @@ import shiffman.box2d.Box2DProcessing;
 
 Box2DProcessing box2d;
 PGraphics ref;
+float gravityMod = 1;
+float velocityMod = 1;
 
 color backgroundColor;
 
@@ -42,7 +44,7 @@ class Box {
     fd.restitution = 0.6;
     
     body.createFixture(fd);
-    body.setGravityScale(50);
+    body.setGravityScale(50 * gravityMod);
     
     colorMode(HSB, 360, 100, 100);
     float randomHue = random(1, 360);
@@ -144,7 +146,7 @@ class BoundingTriangle {
     body.createFixture(a, 1.0);
     body.createFixture(b, 1.0);
     body.createFixture(c, 1.0);
-    body.setAngularVelocity(3 * PI / 2);
+    body.setAngularVelocity(velocityMod * 3 * PI / 4);
   }
   
   void display() {
@@ -164,8 +166,8 @@ BoundingTriangle t;
 
 void setup() {
   size(600, 600, P3D);
-  colorMode(HSB, 360, 100, 100);
-  backgroundColor = color(170, 90, 50);
+  colorMode(HSB, 360, 100, 100, 220);
+  backgroundColor = color(170, 90, 30);
   background(backgroundColor);
   smooth();
   pixelDensity(2);
@@ -214,13 +216,27 @@ boolean isRecording = false;
 
 void randomizeBackgroundColor() {
   colorMode(HSB, 360, 100, 100);
-  backgroundColor = color(random(0, 360), 90, 50);
+  backgroundColor = color(random(0, 360), 90, 30);
+}
+
+void incrGravity() {
+  gravityMod += 0.1;
+  for(Box b: boxes) {
+    b.body.setGravityScale(50 * gravityMod);
+  }
+}
+
+void incrVelocity() {
+  velocityMod += 0.1;
+  t.body.setAngularVelocity(velocityMod * 3 * PI / 4);
 }
 
 void keyPressed()
 {
   if (key == ' ') isRecording = !isRecording;
   if (key == 'b') randomizeBackgroundColor();
+  if (key == 'g') incrGravity();
+  if (key == 'v') incrVelocity();
 }
 
 float angleStep = radians(60);
